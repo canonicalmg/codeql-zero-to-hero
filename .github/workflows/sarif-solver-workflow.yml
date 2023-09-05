@@ -1,0 +1,27 @@
+name: Repodex SARIF Solver Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  analyze-and-solve:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Step 2: Run CodeQL Analysis
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+        with:
+          languages: 'autodetect'
+
+      # Step 3: Use Repodex SARIF Solver
+      - name: Repodex SARIF Solver
+        uses: Repodex-Organization/repodex-sarif-solver@main  # Assuming you want to use the 'main' branch version
+        with:
+          api-key: ${{ secrets.REPODEX_API_KEY }}

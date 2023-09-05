@@ -14,14 +14,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Step 2: Run CodeQL Analysis
-      - name: Run CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
+      # Step 2: Initialize CodeQL Analysis
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
         with:
           languages: 'autodetect'
+          
+      # Step 3: Run CodeQL Analysis
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
 
-      # Step 3: Use Repodex SARIF Solver
+      # Step 4: Use Repodex SARIF Solver
       - name: Repodex SARIF Solver
-        uses: Repodex-Organization/repodex-sarif-solver@main  # Assuming you want to use the 'main' branch version
+        uses: Repodex-Organization/repodex-sarif-solver@main
         with:
           api-key: ${{ secrets.REPODEX_API_KEY }}

@@ -6,9 +6,9 @@ on:
       - main
 
 jobs:
-  analyze-and-solve:
+  codeql-analysis:
     runs-on: ubuntu-latest
-    
+
     steps:
       # Step 1: Checkout the code
       - name: Checkout repository
@@ -24,6 +24,11 @@ jobs:
       - name: Run CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
+  sarif-solver:
+    runs-on: ubuntu-latest
+    needs: codeql-analysis
+
+    steps:
       # Step 4: Use Repodex SARIF Solver
       - name: Repodex SARIF Solver
         uses: Repodex-Organization/repodex-sarif-solver@main

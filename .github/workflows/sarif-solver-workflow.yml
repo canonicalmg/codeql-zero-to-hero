@@ -19,7 +19,8 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: 'autodetect'
-          
+          token: ${{ secrets.GITHUB_TOKEN }}
+    
       # Step 3: Run CodeQL Analysis
       - name: Run CodeQL Analysis
         uses: github/codeql-action/analyze@v2

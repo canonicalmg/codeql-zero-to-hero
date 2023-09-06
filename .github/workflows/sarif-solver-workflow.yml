@@ -1,47 +1,9 @@
-# name: Repodex SARIF Solver Workflow
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   codeql-analysis:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       # Step 1: Checkout the code
-#       - name: Checkout repository
-#         uses: actions/checkout@v2
-
-#       # Step 2: Initialize CodeQL Analysis
-#       - name: Initialize CodeQL
-#         uses: github/codeql-action/init@v2
-#         with:
-#           languages: 'autodetect'
-#           token: ${{ secrets.GITHUB_TOKEN }}
-    
-#       # Step 3: Run CodeQL Analysis
-#       - name: Run CodeQL Analysis
-#         uses: github/codeql-action/analyze@v2
-
-#   sarif-solver:
-#     runs-on: ubuntu-latest
-#     needs: codeql-analysis
-
-#     steps:
-#       # Step 4: Use Repodex SARIF Solver
-#       - name: Repodex SARIF Solver
-#         uses: Repodex-Organization/repodex-sarif-solver@main
-#         with:
-#           api-key: ${{ secrets.REPODEX_API_KEY }}
 name: "CodeQL with Repodex SARIF Solver"
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
     - cron: '30 23 * * 4'
@@ -60,33 +22,30 @@ jobs:
       fail-fast: false
       matrix:
         language: [ 'python' ]
-        # Uncomment other languages as needed
-        # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'swift' ]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # Initializes the CodeQL tools for scanning.
+    # Caching step
+    - name: Cache SARIF output
+      id: cache-sarif
+      uses: actions/cache@v2
+      with:
+        path: ./.github/codeql-analysis/*.sarif
+        key: ${{ runner.os }}-sarif-${{ github.sha }}
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
-        # Add or modify queries as needed
-        # queries: security-extended,security-and-quality
 
-    # Autobuild attempts to build any compiled languages.
-    # Replace this with custom build steps if needed.
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
 
-    # ℹ️ Command-line programs to run using the OS shell.
-    # Uncomment and modify the below lines if the Autobuild fails and you need custom build steps.
-    # - run: |
-    #     echo "Run, Build Application using script"
-    #     ./location_of_script_within_repo/buildscript.sh
-
+    # Conditional CodeQL Analysis step based on the cache
     - name: Perform CodeQL Analysis
+      if: steps.cache-sarif.outputs.cache-hit != 'true'
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
@@ -95,10 +54,8 @@ jobs:
     - name: List files in .github/codeql-analysis/
       run: ls -la .github/codeql-analysis/
 
-    # Repodex SARIF Solver step
     - name: Repodex SARIF Solver
       uses: Repodex-Organization/repodex-sarif-solver@main
       with:
         api-key: ${{ secrets.REPODEX_API_KEY }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
-

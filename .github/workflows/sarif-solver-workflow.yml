@@ -91,6 +91,17 @@ jobs:
       with:
         category: "/language:${{matrix.language}}"
 
+    - name: List files in .github/codeql-analysis/
+      run: ls -la .github/codeql-analysis/
+
+    - name: Archive SARIF file
+      uses: actions/upload-artifact@v2
+      with:
+        name: codeql-sarif
+        path: .github/codeql-analysis/results.sarif
+    
+      
+
     # Repodex SARIF Solver step
     - name: Repodex SARIF Solver
       uses: Repodex-Organization/repodex-sarif-solver@main

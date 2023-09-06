@@ -10,7 +10,6 @@ on:
 
 jobs:
   analyze:
-    if: github.actor != 'canoniclamg'
     name: Analyze
     runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
     timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
@@ -25,11 +24,21 @@ jobs:
         language: [ 'python' ]
 
     steps:
+    - name: Check Commit Type
+      id: check_commit
+      run: |
+        if [[ "${{ github.event.head_commit.message }}" == *"[AUTO]"* ]]; then
+          echo "::set-output name=skip::true"
+        else
+          echo "::set-output name=skip::false"
+        fi
     - name: Checkout repository
+      if: steps.check_commit.outputs.skip == 'false'
       uses: actions/checkout@v3
 
     # Caching step
     - name: Cache SARIF output
+      if: steps.check_commit.outputs.skip == 'false'
       id: cache-sarif
       uses: actions/cache@v2
       with:
@@ -37,11 +46,13 @@ jobs:
         key: ${{ runner.os }}-sarif-${{ github.sha }}
 
     - name: Initialize CodeQL
+      if: steps.check_commit.outputs.skip == 'false'
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
 
     - name: Autobuild
+      if: steps.check_commit.outputs.skip == 'false'
       uses: github/codeql-action/autobuild@v2
 
     # Conditional CodeQL Analysis step based on the cache
@@ -53,9 +64,11 @@ jobs:
         output: "./.github/codeql-analysis"
 
     - name: List files in .github/codeql-analysis/
+      if: steps.check_commit.outputs.skip == 'false'
       run: ls -la .github/codeql-analysis/
 
     - name: Repodex SARIF Solver
+      if: steps.check_commit.outputs.skip == 'false'
       uses: Repodex-Organization/repodex-sarif-solver@main
       with:
         api-key: ${{ secrets.REPODEX_API_KEY }}

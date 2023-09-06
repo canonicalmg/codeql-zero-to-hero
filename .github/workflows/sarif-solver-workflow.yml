@@ -90,6 +90,7 @@ jobs:
       uses: github/codeql-action/analyze@v2
       with:
         category: "/language:${{matrix.language}}"
+        output: "./.github/codeql-analysis"
 
     - name: List files in .github/codeql-analysis/
       run: ls -la .github/codeql-analysis/

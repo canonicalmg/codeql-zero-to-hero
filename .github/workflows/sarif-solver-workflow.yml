@@ -100,3 +100,5 @@ jobs:
       uses: Repodex-Organization/repodex-sarif-solver@main
       with:
         api-key: ${{ secrets.REPODEX_API_KEY }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+

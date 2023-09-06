@@ -93,6 +93,6 @@ jobs:
 
     # Repodex SARIF Solver step
     - name: Repodex SARIF Solver
-      uses: Repodex-Organization/repodex-sarif-solver@main
+      uses: Repodex-Organization/repodex-sarif-solver/main/dist/index.js@main
       with:
         api-key: ${{ secrets.REPODEX_API_KEY }}

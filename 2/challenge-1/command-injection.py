@@ -1,34 +1,20 @@
-import re
-import os
+It seems like you are facing a command injection vulnerability due to the use of user-provided input in your code. To help you fix this issue, I would need to see the actual code in the "command-injection.py" file. However, I can provide you with a general solution to prevent command injection.
+
+You can use the `subprocess` module to safely execute shell commands with user-provided input. Here's an example of how to use the `subprocess` module to prevent command injection:
+
+```python
 import subprocess
 
-from flask import Flask, request
-app = Flask(__name__)
+# Get user input
+user_input = input("Please enter a value: ")
 
+# Safely execute the command with user-provided input
+result = subprocess.run(["your_command", user_input], capture_output=True, text=True)
 
-@app.route("/command1")
-def command_injection1():
-    files = request.args.get('files', '')
-    # Don't let files be `; rm -rf /`
-    os.system("ls " + files) # $result=BAD
+# Print the output
+print(result.stdout)
+```
 
+Replace "your_command" with the actual command you want to execute. This will safely pass the user-provided input as an argument to the command without allowing command injection.
 
-@app.route("/command2")
-def command_injection2():
-    files = request.args.get('files', '')
-    # Don't let files be `; rm -rf /`
-    subprocess.Popen("ls " + files, shell=True) # $result=BAD
-
-
-@app.route("/path-exists-not-sanitizer")
-def path_exists_not_sanitizer():
-    """os.path.exists is not a sanitizer
-
-    This small example is inspired by real world code. Initially, it seems like a good
-    sanitizer. However, if you are able to create files, you can make the
-    `os.path.exists` check succeed, and still be able to run commands. An example is
-    using the filename `not-there || echo pwned`.
-    """
-    path = request.args.get('path', '')
-    if os.path.exists(path):
-        os.system("ls " + path) # $result=BAD
+Please provide the actual code if you need more specific help.

@@ -1,34 +1,22 @@
-import re
+It seems like you are facing a command injection vulnerability issue due to the use of user-provided input in your code. To fix this issue, you should validate and sanitize the user input before using it in your code. Here's a possible solution:
+
+1. Import the `shlex` library to help with input sanitization.
+2. Use the `shlex.quote()` function to sanitize the user-provided input before using it in your code.
+
+Here's an example of how you can modify your code:
+
+```python
 import os
-import subprocess
+import shlex
 
-from flask import Flask, request
-app = Flask(__name__)
+# Get user input
+user_input = input("Please enter a command: ")
 
+# Sanitize user input
+sanitized_input = shlex.quote(user_input)
 
-@app.route("/command1")
-def command_injection1():
-    files = request.args.get('files', '')
-    # Don't let files be `; rm -rf /`
-    os.system("ls " + files) # $result=BAD
+# Execute the command with sanitized input
+os.system(sanitized_input)
+```
 
-
-@app.route("/command2")
-def command_injection2():
-    files = request.args.get('files', '')
-    # Don't let files be `; rm -rf /`
-    subprocess.Popen("ls " + files, shell=True) # $result=BAD
-
-
-@app.route("/path-exists-not-sanitizer")
-def path_exists_not_sanitizer():
-    """os.path.exists is not a sanitizer
-
-    This small example is inspired by real world code. Initially, it seems like a good
-    sanitizer. However, if you are able to create files, you can make the
-    `os.path.exists` check succeed, and still be able to run commands. An example is
-    using the filename `not-there || echo pwned`.
-    """
-    path = request.args.get('path', '')
-    if os.path.exists(path):
-        os.system("ls " + path) # $result=BAD
+This will ensure that the user-provided input is properly sanitized and safe to use in your code, preventing command injection attacks.

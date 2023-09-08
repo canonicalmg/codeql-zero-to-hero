@@ -1,4 +1,4 @@
-<!-- # Challenge 1 - add the Code Scanning GitHub action to a repository
+# Challenge 1 - add the Code Scanning GitHub action to a repository
 In this challenge, we will enable code scanning on a fork of this repository and observe what vulnerabilities CodeQL finds. The repository contains several intentionally vulnerable code snippets, which should be found by code scanning. Follow Instructions-option A to enable code scanning on the fork. 
 
 If you prefer, you can choose another open source project for this challenge. In that case, you can either fork it (Instructions-option B) or clone and upload to a new repository on your account (Instructions—option C).
@@ -70,4 +70,4 @@ The code for this challenge has shamelessly been copied from the [CodeQL example
 
 7. Wait a few minutes for the scan to complete. Go to 'Security' tab and see the alerts that have been triggered.
 
-Congrats on completing challenge 1! 🎉 -->
+Congrats on completing challenge 1! 🎉
